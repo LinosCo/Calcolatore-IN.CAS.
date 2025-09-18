@@ -2,7 +2,6 @@
 
 ## 🌐 Link Wireframes Online
 - **🇮🇹 Calcolatore Italiano:** https://linoscco.github.io/Calcolatore-IN.CAS/incas/
-- **🇬🇧 Calcolatore Inglese:** https://linoscco.github.io/Calcolatore-IN.CAS/incas/calculator-en.html
 
 ## 📋 Stato Progetto
 **Versione:** Calcolatore Funzionale v3.4 - Sezione Vantaggi con Titolo
