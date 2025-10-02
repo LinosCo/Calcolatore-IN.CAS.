@@ -1,0 +1,2285 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolatore S.P.R.I.Z. - IN.CAS. Medical Safety Innovation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* IN.CAS. Brand Colors & Typography */
+        :root {
+          --incas-yellow: #FDC32D;
+          --incas-gray: #4B5055;
+          --incas-white: #FFFFFF;
+          --incas-black: #000000;
+          --light-gray: #f8f9fa;
+          --reference-blue: #248acc;
+          --minimal-gray: #f7f9fc;
+          --soft-shadow: 0 2px 8px rgba(0,0,0,0.06);
+          --container-padding: 2rem;
+          --section-gap: 3rem;
+          --element-gap: 1.5rem;
+          --border-radius: 12px;
+          --border-radius-small: 8px;
+          --shadow-light: 0 2px 10px rgba(0,0,0,0.1);
+          --shadow-medium: 0 4px 20px rgba(0,0,0,0.15);
+          --shadow-strong: 0 8px 30px rgba(0,0,0,0.2);
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Raleway', 'Lato', sans-serif;
+          font-weight: 300;
+          line-height: 1.6;
+          color: var(--incas-gray);
+          background: var(--incas-white);
+          min-height: 100vh;
+        }
+
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: var(--container-padding);
+          position: relative;
+        }
+
+        .progress-container {
+          margin-bottom: var(--section-gap);
+        }
+
+        .progress-bar {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 2rem;
+          background: var(--incas-white);
+          padding: 1.5rem;
+          border-radius: var(--border-radius);
+          box-shadow: var(--shadow-light);
+        }
+
+        .progress-step {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+          opacity: 0.5;
+          transition: opacity 0.3s ease;
+        }
+
+        .progress-step.active {
+          opacity: 1;
+        }
+
+        .step-number {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: var(--light-gray);
+          color: var(--incas-gray);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          transition: all 0.3s ease;
+        }
+
+        .progress-step.active .step-number {
+          background: var(--incas-gray);
+          color: var(--incas-white);
+          border: 2px solid var(--incas-yellow);
+        }
+
+        .progress-step span {
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .step-container {
+          display: none;
+          background: var(--incas-white);
+          border-radius: var(--border-radius);
+          padding: 2rem;
+          box-shadow: var(--shadow-medium);
+          margin-bottom: 2rem;
+        }
+
+        .step-container.active {
+          display: block;
+        }
+
+        .step-header {
+          text-align: center;
+          margin-bottom: var(--section-gap);
+        }
+
+        .step-header h2 {
+          font-family: 'Raleway', sans-serif;
+          font-weight: 600;
+          font-size: 2rem;
+          color: var(--incas-gray);
+          margin-bottom: 0.5rem;
+        }
+
+        .step-header p {
+          font-size: 1.1rem;
+          color: var(--incas-gray);
+        }
+
+        .department-selection {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: var(--section-gap);
+        }
+
+        .department-card {
+          cursor: pointer;
+          display: block;
+          transition: all 0.3s ease;
+        }
+
+        .department-card input[type="radio"] {
+          display: none;
+        }
+
+        .card-content {
+          background: var(--incas-yellow);
+          border: 2px solid var(--incas-yellow);
+          border-radius: var(--border-radius);
+          padding: 1.5rem;
+          text-align: center;
+          transition: all 0.3s ease;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          box-shadow: var(--shadow-medium);
+        }
+
+        .department-card:hover .card-content {
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-strong);
+        }
+
+        .department-card input[type="radio"]:checked + .card-content {
+          border-color: var(--incas-gray);
+          background: var(--incas-yellow);
+          box-shadow: 0 8px 25px rgba(253, 195, 45, 0.4);
+          transform: scale(1.02);
+        }
+
+        .card-content h3 {
+          font-family: 'Raleway', sans-serif;
+          font-weight: 600;
+          font-size: 1.3rem;
+          color: var(--incas-gray);
+          margin-bottom: 0.5rem;
+        }
+
+        .card-content p {
+          color: var(--incas-gray);
+          margin-bottom: 1rem;
+          flex-grow: 1;
+        }
+
+        .parameters-form {
+          margin-bottom: var(--section-gap);
+        }
+
+        .param-group {
+          margin-bottom: 2rem;
+          background: #f8f9fa;
+          padding: 1.5rem;
+          border-radius: var(--border-radius);
+        }
+
+        .param-group h3 {
+          font-family: 'Raleway', sans-serif;
+          font-weight: 600;
+          color: var(--incas-gray);
+          margin-bottom: 1rem;
+        }
+
+        .slider-container {
+          margin-bottom: 1.5rem;
+        }
+
+        .slider-label {
+          display: block;
+          font-weight: 500;
+          color: var(--incas-gray);
+          margin-bottom: 0.5rem;
+        }
+
+        .param-section {
+          margin-bottom: 1.5rem;
+        }
+
+        .section-label {
+          display: block;
+          font-weight: 500;
+          color: var(--incas-gray);
+          margin-bottom: 0.75rem;
+          font-size: 0.95rem;
+        }
+
+        .slider-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .slider {
+          flex-grow: 1;
+          height: 8px;
+          border-radius: 4px;
+          background: linear-gradient(to right, var(--incas-gray) 0%, var(--incas-gray) var(--slider-progress, 50%), #e9ecef var(--slider-progress, 50%), #e9ecef 100%);
+          outline: none;
+          -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: var(--incas-yellow);
+          cursor: pointer;
+          border: 2px solid var(--incas-white);
+          box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .slider::-moz-range-thumb {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: var(--incas-yellow);
+          cursor: pointer;
+          border: 2px solid var(--incas-white);
+          box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+          min-width: 80px;
+          background: var(--incas-yellow);
+          color: var(--incas-gray);
+          padding: 0.5rem 1rem;
+          border-radius: var(--border-radius-small);
+          font-weight: 600;
+          text-align: center;
+        }
+
+        .radio-group {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+          flex-wrap: wrap;
+        }
+
+        .radio-option {
+          cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+          display: none;
+        }
+
+        .radio-label {
+          display: block;
+          background: var(--incas-white);
+          border: 2px solid #e9ecef;
+          padding: 0.8rem 1.2rem;
+          border-radius: var(--border-radius-small);
+          font-weight: 500;
+          transition: all 0.3s ease;
+          text-align: center;
+        }
+
+        .radio-option:hover .radio-label {
+          border-color: var(--incas-yellow);
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label {
+          background: var(--incas-yellow);
+          border-color: var(--incas-yellow);
+          color: var(--incas-gray);
+        }
+
+        .lead-wall {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(255,255,255,0.95);
+          backdrop-filter: blur(5px);
+          z-index: 1000;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          padding: 2rem;
+        }
+
+        .lead-wall.active {
+          display: flex;
+        }
+
+        .lead-wall-content {
+          background: var(--incas-white);
+          padding: 2rem;
+          border-radius: var(--border-radius);
+          box-shadow: var(--shadow-strong);
+          max-width: 500px;
+          width: 100%;
+          text-align: center;
+          max-height: 90vh;
+          overflow-y: auto;
+        }
+
+        .lead-wall-content h3 {
+          font-family: 'Raleway', sans-serif;
+          font-weight: 600;
+          color: var(--incas-gray);
+          margin-bottom: 1rem;
+        }
+
+        .lead-wall-content p {
+          color: var(--incas-gray);
+          margin-bottom: 1rem;
+        }
+
+        .email-info {
+          background: #f0f8ff;
+          border-left: 4px solid var(--incas-yellow);
+          padding: 0.8rem 1rem;
+          border-radius: 4px;
+          margin-bottom: 2rem;
+          font-size: 0.95rem;
+        }
+
+        .lead-form {
+          text-align: left;
+        }
+
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .form-group {
+          margin-bottom: 1rem;
+        }
+
+        .form-group label {
+          display: block;
+          font-weight: 500;
+          color: var(--incas-gray);
+          margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+          width: 100%;
+          padding: 0.8rem;
+          border: 2px solid #e9ecef;
+          border-radius: var(--border-radius-small);
+          font-size: 1rem;
+          transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+          outline: none;
+          border-color: var(--incas-yellow);
+        }
+
+        .checkbox-group {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.8rem;
+        }
+
+        .checkbox-label {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.8rem;
+          font-size: 0.95rem;
+          cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+          display: none;
+        }
+
+        .checkmark {
+          width: 20px;
+          height: 20px;
+          border: 2px solid var(--incas-gray);
+          border-radius: 4px;
+          position: relative;
+          transition: all 0.3s ease;
+          flex-shrink: 0;
+          margin-top: 2px;
+          background: var(--incas-white);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked + .checkmark {
+          background: var(--incas-yellow);
+          border-color: var(--incas-yellow);
+        }
+
+        .checkbox-label:hover {
+          color: var(--incas-gray) !important;
+        }
+
+        .checkbox-label a {
+          color: var(--incas-gray) !important;
+          text-decoration: underline;
+        }
+
+        .checkbox-label a:hover {
+          color: var(--incas-gray) !important;
+          text-decoration: underline;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+          content: '✓';
+          color: var(--incas-gray);
+          font-weight: 900;
+          font-size: 14px;
+          line-height: 1;
+        }
+
+        .form-group.error input,
+        .form-group.error textarea {
+          border-color: #dc2626;
+          background-color: #fef2f2;
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .checkbox-group.error .checkbox-label {
+          color: #dc2626;
+        }
+
+        .checkbox-group.error .checkmark {
+          border-color: #dc2626;
+          background-color: #fef2f2;
+        }
+
+        .error-message {
+          color: #dc2626;
+          font-size: 0.875rem;
+          font-weight: 500;
+          margin-top: 0.5rem;
+          padding: 0.5rem 0.75rem;
+          background-color: #fef2f2;
+          border: 1px solid #fecaca;
+          border-radius: 4px;
+          line-height: 1.4;
+        }
+
+        .results-content {
+          position: relative;
+          transition: filter 0.3s ease;
+        }
+
+        .results-content.blurred {
+          filter: blur(8px);
+          pointer-events: none;
+        }
+
+        /* FASCE RISPARMIO E CO2 - NUOVO LAYOUT */
+        .savings-strip {
+          display: grid;
+          grid-template-columns: 1fr 200px;
+          gap: 2rem;
+          align-items: center;
+          background: linear-gradient(135deg, #FDC32D 0%, #f0b429 100%);
+          padding: 2rem 3rem;
+          border-radius: var(--border-radius);
+          margin-bottom: 2rem;
+          box-shadow: var(--shadow-medium);
+        }
+
+        .savings-info-box {
+          text-align: left;
+        }
+
+        .savings-info-title {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: var(--incas-gray);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 0.3rem;
+        }
+
+        .savings-info-subtitle {
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: var(--incas-gray);
+          margin-bottom: 1rem;
+        }
+
+        .savings-info-amount {
+          font-size: 2.5rem;
+          font-weight: 800;
+          color: var(--incas-gray);
+          line-height: 1;
+          margin-bottom: 0.3rem;
+        }
+
+        .savings-info-period {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--incas-gray);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .savings-chart {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .co2-strip {
+          display: grid;
+          grid-template-columns: 1fr 200px;
+          gap: 2rem;
+          align-items: center;
+          background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+          padding: 2rem 3rem;
+          border-radius: var(--border-radius);
+          margin-bottom: 2rem;
+          box-shadow: var(--shadow-medium);
+        }
+
+        .co2-info-box {
+          text-align: left;
+        }
+
+        .co2-info-title {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #ffffff;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 0.3rem;
+        }
+
+        .co2-info-subtitle {
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: #ffffff;
+          margin-bottom: 1rem;
+        }
+
+        .co2-info-amount {
+          font-size: 2.5rem;
+          font-weight: 800;
+          color: #ffffff;
+          line-height: 1;
+          margin-bottom: 0.3rem;
+        }
+
+        .co2-info-period {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #ffffff;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .co2-chart {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .progress-circle {
+          width: 120px;
+          height: 120px;
+          margin: 0 auto;
+          position: relative;
+          cursor: pointer;
+          transition: transform 0.3s ease;
+          flex-shrink: 0;
+        }
+
+        .progress-circle:hover {
+          transform: scale(1.05);
+        }
+
+        .progress-circle svg {
+          width: 100%;
+          height: 100%;
+          transform: rotate(-90deg);
+        }
+
+        .progress-circle .background {
+          fill: none;
+          stroke: rgba(255, 255, 255, 0.3);
+          stroke-width: 4;
+        }
+
+        .progress-circle.savings .background {
+          stroke: rgba(75, 80, 85, 0.2);
+        }
+
+        .progress-circle .progress {
+          fill: none;
+          stroke-width: 4;
+          stroke-linecap: round;
+          transition: stroke-dasharray 1s ease;
+        }
+
+        .progress-circle.savings .progress {
+          stroke: var(--incas-gray);
+        }
+
+        .progress-circle.co2 .progress {
+          stroke: #ffffff;
+        }
+
+        .progress-circle .percentage-text {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: var(--incas-gray);
+        }
+
+        .progress-circle.co2 .percentage-text {
+          color: #ffffff;
+        }
+
+        .comparison-section {
+          background: #f8f9fa;
+          padding: 2rem;
+          border-radius: var(--border-radius);
+          margin-bottom: 2rem;
+        }
+
+        .comparison-section h3 {
+          font-family: 'Raleway', sans-serif;
+          font-weight: 600;
+          color: var(--incas-gray);
+          text-align: center;
+          margin-bottom: 2rem;
+          font-size: 1.5rem;
+        }
+
+        .comparison-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem;
+          align-items: start;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+
+        .method-card {
+          background: var(--incas-white);
+          padding: 2rem;
+          border-radius: var(--border-radius);
+          box-shadow: var(--shadow-medium);
+          text-align: center;
+          border: 2px solid #e9ecef;
+        }
+
+        .method-card.winner {
+          border-color: var(--incas-yellow);
+          background: linear-gradient(135deg, #fff 0%, #fffbf0 100%);
+          position: relative;
+          transform: scale(1.05);
+          box-shadow: var(--shadow-strong);
+          margin-top: 12px;
+        }
+
+        .winner-badge {
+          position: absolute;
+          top: -12px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: var(--incas-yellow);
+          color: var(--incas-gray);
+          padding: 0.5rem 1.5rem;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          font-weight: 700;
+          letter-spacing: 1px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .method-header {
+          margin-bottom: 1.5rem;
+        }
+
+        .method-header h4 {
+          font-family: 'Raleway', sans-serif;
+          font-weight: 700;
+          color: var(--incas-gray);
+          margin-bottom: 0.5rem;
+          font-size: 1.3rem;
+        }
+
+        .method-subtitle {
+          font-size: 0.9rem;
+          color: var(--incas-gray);
+          opacity: 0.8;
+        }
+
+        .cost-display-new {
+          background: #f8f9fa;
+          padding: 1.5rem;
+          border-radius: var(--border-radius-small);
+          text-align: center;
+        }
+
+        .cost-display-new.winner {
+          background: var(--incas-yellow);
+        }
+
+        .primary-cost {
+          margin-bottom: 1rem;
+        }
+
+        .cost-amount-large {
+          font-size: 2.8rem;
+          font-weight: 900;
+          color: var(--incas-gray);
+          line-height: 1;
+          margin-bottom: 0.3rem;
+        }
+
+        .cost-period {
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: var(--incas-gray);
+          opacity: 0.8;
+        }
+
+        .secondary-cost {
+          border-top: 2px solid rgba(75, 80, 85, 0.1);
+          padding-top: 1rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+
+        .annual-label {
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--incas-gray);
+          opacity: 0.7;
+        }
+
+        .cost-amount-small {
+          font-size: 1.4rem;
+          font-weight: 700;
+          color: var(--incas-gray);
+        }
+
+        .co2-section {
+          background: #f0f8ff;
+          border: 2px solid #e0f2ff;
+          border-radius: var(--border-radius-small);
+          padding: 1rem;
+          margin-top: 1rem;
+        }
+
+        .co2-label {
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: var(--incas-gray);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 0.5rem;
+        }
+
+        .co2-value {
+          font-size: 1.2rem;
+          font-weight: 700;
+          margin-bottom: 0.5rem;
+        }
+
+        .co2-value.traditional {
+          color: #d73527;
+        }
+
+        .co2-value.spriz {
+          color: #22c55e;
+        }
+
+        .co2-benefit {
+          font-size: 0.85rem;
+          color: #22c55e;
+          font-weight: 600;
+        }
+
+        .detailed-breakdown {
+          background: var(--incas-white);
+          border: 1px solid #e9ecef;
+          border-radius: var(--border-radius);
+          overflow: hidden;
+        }
+
+        .detailed-breakdown h3 {
+          font-family: 'Raleway', sans-serif;
+          font-weight: 600;
+          color: var(--incas-gray);
+          padding: 1rem 1.5rem;
+          background: #f8f9fa;
+          margin: 0;
+        }
+
+        .breakdown-table {
+          padding: 1.5rem;
+        }
+
+        .step-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: var(--section-gap);
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+
+        .btn-back,
+        .btn-next,
+        .btn-submit {
+          padding: 0.8rem 1.5rem;
+          border: none;
+          border-radius: var(--border-radius-small);
+          font-weight: 600;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-decoration: none;
+          display: inline-block;
+          text-align: center;
+        }
+
+        .btn-next,
+        .btn-submit {
+          background: var(--incas-yellow);
+          color: var(--incas-gray);
+        }
+
+        .btn-next:hover,
+        .btn-submit:hover {
+          background: #e6b029;
+          transform: translateY(-1px);
+        }
+
+        .cf7-form-container .wpcf7 {
+          text-align: left;
+        }
+
+        .cf7-form-container .wpcf7-form {
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+        }
+
+        .cf7-form-container .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.6rem;
+        }
+
+        .cf7-form-container .wpcf7-form > p {
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .cf7-form-container .wpcf7-form label {
+          display: block;
+          font-weight: 500;
+          color: var(--incas-gray);
+          margin-bottom: 0.3rem;
+          font-size: 0.85rem;
+        }
+
+        .cf7-form-container .wpcf7-form input[type="text"],
+        .cf7-form-container .wpcf7-form input[type="email"],
+        .cf7-form-container .wpcf7-form input[type="tel"],
+        .cf7-form-container .wpcf7-form textarea {
+          width: 100%;
+          padding: 0.5rem;
+          border: 2px solid #e9ecef;
+          border-radius: var(--border-radius-small);
+          font-size: 0.9rem;
+          transition: border-color 0.3s ease;
+          font-family: 'Raleway', sans-serif;
+        }
+
+        .cf7-form-container .wpcf7-form input:focus,
+        .cf7-form-container .wpcf7-form textarea:focus {
+          outline: none;
+          border-color: var(--incas-yellow);
+          box-shadow: 0 0 0 3px rgba(253, 195, 45, 0.1);
+        }
+
+        .cf7-form-container .wpcf7-form textarea {
+          min-height: 35px;
+          resize: vertical;
+        }
+
+        .cf7-form-container .wpcf7-form .wpcf7-acceptance,
+        .cf7-form-container .wpcf7-form .wpcf7-checkbox {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.6rem;
+          margin: 0.2rem 0;
+        }
+
+        .cf7-form-container .wpcf7-form .wpcf7-acceptance input[type="checkbox"],
+        .cf7-form-container .wpcf7-form .wpcf7-checkbox input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          margin: 0;
+          margin-top: 1px;
+          flex-shrink: 0;
+          cursor: pointer;
+        }
+
+        .cf7-form-container .wpcf7-form .wpcf7-acceptance label,
+        .cf7-form-container .wpcf7-form .wpcf7-checkbox label {
+          font-size: 0.85rem;
+          line-height: 1.2;
+          margin: 0;
+          cursor: pointer;
+        }
+
+        .cf7-form-container .wpcf7-form .wpcf7-acceptance label a,
+        .cf7-form-container .wpcf7-form .wpcf7-checkbox label a {
+          color: var(--incas-gray);
+          text-decoration: underline;
+        }
+
+        .cf7-form-container .wpcf7-form .wpcf7-submit {
+          width: 100%;
+          padding: 0.6rem 1.5rem;
+          background: var(--incas-yellow);
+          color: var(--incas-gray);
+          border: none;
+          border-radius: var(--border-radius-small);
+          font-size: 0.9rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-family: 'Raleway', sans-serif;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-top: 0.2rem;
+        }
+
+        .cf7-form-container .wpcf7-form .wpcf7-submit:hover {
+          background: #e6b029;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(253, 195, 45, 0.4);
+        }
+
+        .cf7-form-container .wpcf7-response-output {
+          margin: 1rem 0;
+          padding: 0.8rem;
+          border-radius: var(--border-radius-small);
+          font-weight: 500;
+        }
+
+        .cf7-form-container .wpcf7-mail-sent-ok {
+          background: #d4edda;
+          color: #155724;
+          border: 1px solid #c3e6cb;
+        }
+
+        .cf7-form-container .wpcf7-validation-errors {
+          background: #f8d7da;
+          color: #721c24;
+          border: 1px solid #f5c6cb;
+        }
+
+        .btn-next:disabled {
+          background: #e9ecef;
+          color: #6c757d;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .btn-back {
+          background: transparent;
+          color: var(--incas-gray);
+          border: 2px solid #e9ecef;
+        }
+
+        .btn-back:hover {
+          background: #f8f9fa;
+          border-color: var(--incas-yellow);
+          transform: translateY(-1px);
+        }
+
+        .benefits-section {
+          margin-top: 2rem;
+          margin-bottom: 2rem;
+        }
+
+        .benefits-title {
+          text-align: center;
+          color: var(--incas-gray);
+          font-size: 1.8rem;
+          font-weight: 700;
+          margin-bottom: 2rem;
+          margin-top: 0;
+        }
+
+        .benefits-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 2rem;
+          max-width: 1000px;
+          margin: 0 auto;
+        }
+
+        .benefit-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+
+        .benefit-icon {
+          width: 120px;
+          height: 120px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 1rem;
+          transition: transform 0.3s ease;
+          background: var(--incas-gray);
+          border-radius: 50%;
+        }
+
+        .benefit-icon i {
+          font-size: 3rem;
+          color: white;
+        }
+
+        .benefit-icon:hover {
+          transform: scale(1.1);
+        }
+
+        .benefit-text {
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: var(--incas-gray);
+          text-transform: uppercase;
+          line-height: 1.2;
+          max-width: 150px;
+        }
+
+        .security-section {
+          margin-top: 3rem;
+          padding: 2rem;
+          background: transparent;
+        }
+
+        .security-content {
+          display: grid;
+          grid-template-columns: 1fr 400px;
+          gap: 3rem;
+          align-items: start;
+        }
+
+        .security-text h3 {
+          font-family: 'Raleway', sans-serif;
+          font-weight: 700;
+          font-size: 1.8rem;
+          color: var(--incas-gray);
+          margin-bottom: 1rem;
+        }
+
+        .security-text p {
+          color: var(--incas-gray);
+          line-height: 1.6;
+          margin-bottom: 1rem;
+        }
+
+        .security-features {
+          margin-top: 1.5rem;
+        }
+
+        .security-feature {
+          margin-bottom: 1rem;
+          color: var(--incas-gray);
+          line-height: 1.5;
+        }
+
+        .security-feature strong {
+          color: var(--incas-gray);
+          font-weight: 600;
+        }
+
+        .security-image {
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          margin-top: 0;
+        }
+
+        .security-image img {
+          max-width: 380px;
+          width: 100%;
+          height: auto;
+          border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+          :root {
+            --container-padding: 1rem;
+            --section-gap: 2rem;
+          }
+
+          .progress-bar {
+            gap: 1rem;
+            padding: 1rem;
+          }
+
+          .step-number {
+            width: 35px;
+            height: 35px;
+          }
+
+          .department-selection {
+            grid-template-columns: 1fr;
+          }
+
+          .form-row {
+            grid-template-columns: 1fr;
+          }
+
+          .comparison-container {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+          }
+
+          .method-card.winner {
+            transform: none;
+          }
+
+          .savings-strip,
+          .co2-strip {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+          }
+
+          .savings-info-box,
+          .co2-info-box {
+            text-align: center;
+          }
+
+          .savings-info-amount,
+          .co2-info-amount {
+            font-size: 2rem;
+          }
+
+          .savings-info-period,
+          .co2-info-period {
+            font-size: 1.2rem;
+          }
+
+          .step-actions {
+            flex-direction: column;
+            width: 100%;
+          }
+
+          .btn-back,
+          .btn-next,
+          .btn-submit {
+            width: 100%;
+          }
+
+          .benefits-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+          }
+
+          .security-content {
+            display: block;
+            text-align: left;
+          }
+
+          .security-image {
+            margin-top: 2rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .step-container {
+            padding: 1rem;
+          }
+
+          .benefits-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+          }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <span>Reparto</span>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <span>Parametri</span>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <span>Confronto</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container active" id="step1">
+            <div class="step-header">
+                <h2>Seleziona il Reparto Ospedaliero</h2>
+                <p>Scegli il reparto per cui vuoi calcolare il risparmio con S.P.R.I.Z.</p>
+            </div>
+
+            <div class="department-selection">
+                <label class="department-card">
+                    <input type="radio" name="department" value="urologia-operatoria">
+                    <div class="card-content">
+                        <h3>Sala Operatoria Urologia</h3>
+                        <p>Interventi Endourologici con aspirazione liquidi biologici<br>(TURP, TURB, PCNL)</p>
+                    </div>
+                </label>
+
+                <label class="department-card">
+                    <input type="radio" name="department" value="terapia-intensiva">
+                    <div class="card-content">
+                        <h3>Terapia Intensiva</h3>
+                        <p>Procedure CRRT con dialisi continua</p>
+                    </div>
+                </label>
+
+                <label class="department-card">
+                    <input type="radio" name="department" value="urologia-degenza">
+                    <div class="card-content">
+                        <h3>Urologia Degenza</h3>
+                        <p>Procedure cistoclisi nel reparto urologico</p>
+                    </div>
+                </label>
+            </div>
+
+            <div class="step-actions">
+                <button class="btn-next" id="nextToStep2" disabled>Continua →</button>
+            </div>
+        </div>
+
+        <div class="step-container" id="step2">
+            <div class="step-header">
+                <h2>Inserisci i Parametri</h2>
+                <p>Configura i parametri specifici per il tuo reparto</p>
+            </div>
+
+            <div class="parameters-form" id="parametersForm"></div>
+
+            <div class="step-actions">
+                <button class="btn-back" id="backToStep1">← Indietro</button>
+                <button class="btn-next" id="nextToStep3">Calcola Risparmio →</button>
+            </div>
+        </div>
+
+        <div class="step-container" id="step3">
+            <div class="step-header">
+                <h2>Confronto tra i metodi di gestione liquidi biologici</h2>
+                <p>Ecco quanto puoi risparmiare con la soluzione innovativa S.P.R.I.Z.</p>
+            </div>
+
+            <div class="lead-wall active" id="leadWall">
+                <div class="lead-wall-content">
+                    <h3>Risultati Disponibili!</h3>
+                    <p>Per visualizzare i calcoli dettagliati del risparmio economico e ambientale, compila il form sottostante.</p>
+                    <p class="email-info"><strong>I risultati verranno inviati anche via email</strong> <span>per una consultazione futura.</span></p>
+                    <div class="cf7-form-container">
+                        [contact-form-7 id="2afd5de" title="Calcolatore SPRIZ ita"]
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-content blurred" id="resultsContent">
+                <div class="comparison-section">
+                    <h3>Costi a confronto</h3>
+                    <div class="comparison-container">
+                        <div class="method-card traditional">
+                            <div class="method-header">
+                                <h4>Metodo tradizionale<br>con Canister da 3L</h4>
+                                <div class="method-subtitle">Costo con l'attuale sistema ospedaliero</div>
+                            </div>
+                            <div class="cost-display-new">
+                                <div class="primary-cost">
+                                    <div class="cost-amount-large" id="traditionalCostAnnual">€ 0</div>
+                                    <div class="cost-period">all'anno</div>
+                                </div>
+                                <div class="secondary-cost">
+                                    <div class="annual-label">Costo giornaliero:</div>
+                                    <div class="cost-amount-small" id="traditionalCost">€ 0</div>
+                                </div>
+                            </div>
+                            <div class="co2-section">
+                                <div class="co2-label">Impatto Ambientale</div>
+                                <div class="co2-value traditional">
+                                    <span id="traditionalCO2">0 kg</span> <span>CO₂/anno</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="method-card spriz winner">
+                            <div class="winner-badge">SOLUZIONE INNOVATIVA</div>
+                            <div class="method-header">
+                                <h4>S.P.R.I.Z.</h4>
+                                <div class="method-subtitle">Costo con il sistema di aspirazione liquidi biologici</div>
+                            </div>
+                            <div class="cost-display-new winner">
+                                <div class="primary-cost">
+                                    <div class="cost-amount-large" id="sprizCostAnnual">€ 0</div>
+                                    <div class="cost-period">all'anno</div>
+                                </div>
+                                <div class="secondary-cost">
+                                    <div class="annual-label">Costo giornaliero:</div>
+                                    <div class="cost-amount-small" id="sprizCost">€ 40</div>
+                                </div>
+                            </div>
+                            <div class="co2-section">
+                                <div class="co2-label">Impatto Ambientale</div>
+                                <div class="co2-value spriz">
+                                    <span id="sprizCO2">0 kg</span> CO₂/anno
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FASCE RISPARMIO E CO2 -->
+                <h2 style="text-align: center; color: var(--incas-gray); font-weight: 600; font-size: 1.8rem; margin: 2rem 0 1.5rem 0;">Benefici economici e ambientali con il sistema S.P.R.I.Z.</h2>
+                <div class="savings-strip">
+                    <div class="savings-info-box">
+                        <div class="savings-info-title">RISPARMIO ECONOMICO</div>
+                        <div class="savings-info-subtitle">CON L'ASPIRATORE S.P.R.I.Z.</div>
+                        <div class="savings-info-amount" id="savingsAmount">€ 0</div>
+                        <div class="savings-info-period">ALL'ANNO</div>
+                    </div>
+                    <div class="savings-chart">
+                        <div class="progress-circle savings">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="background" cx="18" cy="18" r="16"></circle>
+                                <circle class="progress" cx="18" cy="18" r="16" stroke-dasharray="0, 100" id="savingsProgress"></circle>
+                            </svg>
+                            <div class="percentage-text" id="savingsProgressText">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="co2-strip">
+                    <div class="co2-info-box">
+                        <div class="co2-info-title">RIDUZIONE CO₂</div>
+                        <div class="co2-info-subtitle">CON L'ASPIRATORE S.P.R.I.Z.</div>
+                        <div class="co2-info-amount" id="co2Amount">0 kg</div>
+                        <div class="co2-info-period">ALL'ANNO</div>
+                    </div>
+                    <div class="co2-chart">
+                        <div class="progress-circle co2">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="background" cx="18" cy="18" r="16"></circle>
+                                <circle class="progress" cx="18" cy="18" r="16" stroke-dasharray="0, 100" id="co2Progress"></circle>
+                            </svg>
+                            <div class="percentage-text" id="co2ProgressText">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detailed-breakdown">
+                    <h3>Dettaglio Calcoli</h3>
+                    <div class="breakdown-table" id="breakdownTable"></div>
+                </div>
+
+                <div class="benefits-section">
+                    <h3 class="benefits-title">Ulteriori vantaggi del sistema S.P.R.I.Z.</h3>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-icon"><i class="fa fa-shield"></i></div>
+                            <div class="benefit-text">PROTEZIONE ANTIVIRALE</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon"><i class="fa fa-random"></i></div>
+                            <div class="benefit-text">RIDUZIONE CROSS-CONTAMINATIONS</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon"><i class="fa fa-lock"></i></div>
+                            <div class="benefit-text">MAGGIORE SICUREZZA PER GLI UTILIZZATORI</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon"><i class="fa fa-th"></i></div>
+                            <div class="benefit-text">UTILIZZO MULTIDISCIPLINARE</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon"><i class="fa fa-clock-o"></i></div>
+                            <div class="benefit-text">PROCEDURE DI LAVORO PIÙ VELOCI</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon"><i class="fa fa-hand-stop-o"></i></div>
+                            <div class="benefit-text">NESSUN SOLLEVAMENTO DI CARICHI</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon"><i class="fa fa-users"></i></div>
+                            <div class="benefit-text">OTTIMIZZAZIONE DEL PERSONALE</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon"><i class="fa fa-euro"></i></div>
+                            <div class="benefit-text">RIDUZIONE DEI COSTI</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="security-section">
+                    <div class="security-content">
+                        <div class="security-text">
+                            <h3>Sicurezza totale ogni giorno</h3>
+                            <p><strong>S.P.R.I.Z.</strong> è stato progettato e realizzato per permettere agli operatori sanitari la gestione dei liquidi organici in totale sicurezza, nel rispetto delle normative di legge.</p>
+                            <p>La completa tracciabilità di tutte le funzioni fondamentali dell'aspiratore garantisce un nuovo standard di sicurezza.</p>
+                            <div class="security-features">
+                                <div class="security-feature">
+                                    <strong>RISCHIO DI CONTAMINAZIONE BIOLOGICA:</strong> azzera il rischio da contatto con i liquidi biologici potenzialmente contaminati.
+                                </div>
+                                <div class="security-feature">
+                                    <strong>SOLLEVAMENTO E SPOSTAMENTO:</strong> evita il continuo sollevamento e spostamento da parte degli operatori delle sacche di raccolta liquidi.
+                                </div>
+                                <div class="security-feature">
+                                    <strong>DISINFEZIONE LIQUIDO ASPIRATO:</strong> nella modalità di aspirazione dei liquidi biologici infetti attiva un sistema di disinfezione in tempo reale, con pompa peristaltica di precisione per il corretto dosaggio del disinfettante.
+                                </div>
+                                <div class="security-feature">
+                                    <strong>AUTO DISINFEZIONE DELL'APPARECCHIATURA:</strong> alto livello di auto-disinfezione dell'aspiratore per garantire la massima sicurezza.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="security-image">
+                            <img src="https://www.aspiratoriliquidibiologici.it/wp-content/uploads/2025/09/imm-spriz.png" alt="Dispositivo S.P.R.I.Z. IN.CAS" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button class="btn-back" id="backToStep2">← Modifica Parametri</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatEuropeanNumber(number) {
+          return new Intl.NumberFormat('it-IT', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+          }).format(Math.round(number));
+        }
+
+        function formatCurrency(number) {
+          const formattedNumber = formatEuropeanNumber(Math.round(number));
+          return `€ ${formattedNumber}`;
+        }
+
+        function formatDailyCost(number) {
+          const formattedNumber = formatEuropeanNumber(Math.round(number));
+          return `€ ${formattedNumber}`;
+        }
+
+        const COSTANTI = {
+          CANISTER_PRICE: 1.56,
+          SACCHE_TI_PRICE: 4.00,
+          SACCHE_DEG_PRICE: 5.50,
+          SMALTIMENTO_PRICE: 1.43,
+          BIO_BOX_PRICE: 6.00,
+          SPRIZ_DAILY_COST: 40.00,
+          CO2_STANDARD_PER_LITER: 0.082,
+          CO2_SPRIZ_BASE: 1.03,
+          CO2_SPRIZ_PER_LITER: 0.0048,
+          CANISTER_CAPACITY: 3,
+          BIO_BOX_FREQUENCY: 3,
+          BIO_BOX_FREQUENCY_OTHER: 20,
+          SACCHE_DEG_CAPACITY: 5,
+        };
+
+        let appState = {
+          currentStep: 1,
+          selectedDepartment: null,
+          parameters: {},
+          results: {},
+          formSubmitted: false
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+          initializeApp();
+        });
+
+        function initializeApp() {
+          setupEventListeners();
+          updateProgressBar();
+        }
+
+        function setupEventListeners() {
+          const departmentRadios = document.querySelectorAll('input[name="department"]');
+          departmentRadios.forEach(radio => {
+            radio.addEventListener('change', handleDepartmentSelection);
+          });
+
+          document.getElementById('nextToStep2')?.addEventListener('click', () => goToStep(2));
+          document.getElementById('backToStep1')?.addEventListener('click', () => goToStep(1));
+          document.getElementById('nextToStep3')?.addEventListener('click', () => goToStep(3));
+          document.getElementById('backToStep2')?.addEventListener('click', () => goToStep(2));
+
+          setupContactForm7Integration();
+
+          document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => setupContactForm7Integration(), 2000);
+          });
+
+          window.addEventListener('load', () => {
+            setTimeout(() => setupContactForm7Integration(), 3000);
+          });
+        }
+
+        function handleDepartmentSelection(event) {
+          appState.selectedDepartment = event.target.value;
+          document.getElementById('nextToStep2').disabled = false;
+        }
+
+        function goToStep(stepNumber) {
+          document.querySelectorAll('.step-container').forEach(step => {
+            step.classList.remove('active');
+          });
+
+          document.getElementById(`step${stepNumber}`).classList.add('active');
+
+          appState.currentStep = stepNumber;
+          updateProgressBar();
+
+          if (stepNumber === 2) {
+            generateParametersForm();
+          } else if (stepNumber === 3) {
+            calculateResults();
+            showResults();
+
+            setTimeout(() => {
+              setupContactForm7Integration();
+              console.log('Forzato popolamento CF7 allo step 3');
+            }, 1500);
+          }
+        }
+
+        function updateProgressBar() {
+          document.querySelectorAll('.progress-step').forEach((step, index) => {
+            const stepNumber = index + 1;
+            if (stepNumber <= appState.currentStep) {
+              step.classList.add('active');
+            } else {
+              step.classList.remove('active');
+            }
+          });
+        }
+
+        function generateParametersForm() {
+          const form = document.getElementById('parametersForm');
+          if (!form || !appState.selectedDepartment) return;
+
+          let formHTML = '';
+
+          switch (appState.selectedDepartment) {
+            case 'urologia-operatoria':
+              formHTML = generateUrologiaOperatoriaForm();
+              break;
+            case 'terapia-intensiva':
+              formHTML = generateTerapiaIntensivaForm();
+              break;
+            case 'urologia-degenza':
+              formHTML = generateUrologiaDegenzaForm();
+              break;
+          }
+
+          form.innerHTML = formHTML;
+          setupParametersEventListeners();
+        }
+
+        function generateUrologiaOperatoriaForm() {
+          return `
+            <div class="param-group">
+              <h3>Sala Operatoria Urologia</h3>
+
+              <div class="slider-container">
+                <label class="slider-label">Litri per seduta</label>
+                <div class="slider-wrapper">
+                  <input type="range" class="slider" id="litri-giorno"
+                         min="30" max="90" value="30" step="1">
+                  <div class="slider-value" id="litri-giorno-value">30</div>
+                </div>
+              </div>
+
+              <div class="param-section">
+                <label class="section-label">Giorni operativi della sala in un anno</label>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input type="radio" name="giorni-operativita" value="120">
+                    <span class="radio-label">120 giorni/anno</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="giorni-operativita" value="150">
+                    <span class="radio-label">150 giorni/anno</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="giorni-operativita" value="180" checked>
+                    <span class="radio-label">180 giorni/anno</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="giorni-operativita" value="210">
+                    <span class="radio-label">210 giorni/anno</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        function generateTerapiaIntensivaForm() {
+          return `
+            <div class="param-group">
+              <h3>Terapia Intensiva</h3>
+
+              <div class="slider-container">
+                <label class="slider-label">Numero pazienti CRRT</label>
+                <div class="slider-wrapper">
+                  <input type="range" class="slider" id="pazienti-crrt"
+                         min="1" max="5" value="1" step="1">
+                  <div class="slider-value" id="pazienti-crrt-value">1</div>
+                </div>
+              </div>
+
+              <div class="slider-container">
+                <label class="slider-label">Litri per paziente prodotti al giorno</label>
+                <div class="slider-wrapper">
+                  <input type="range" class="slider" id="litri-paziente"
+                         min="40" max="80" value="40" step="5">
+                  <div class="slider-value" id="litri-paziente-value">40</div>
+                </div>
+              </div>
+
+              <div class="param-section">
+                <label class="section-label">Capacità sacche</label>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input type="radio" name="capacita-sacche" value="5" checked>
+                    <span class="radio-label">5L</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="capacita-sacche" value="8">
+                    <span class="radio-label">8L</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="capacita-sacche" value="10">
+                    <span class="radio-label">10L</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="param-section">
+                <label class="section-label">Giornate CRRT in un anno</label>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input type="radio" name="giorni-operativita-ti" value="120">
+                    <span class="radio-label">120 giorni/anno</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="giorni-operativita-ti" value="150">
+                    <span class="radio-label">150 giorni/anno</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="giorni-operativita-ti" value="180" checked>
+                    <span class="radio-label">180 giorni/anno</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="giorni-operativita-ti" value="210">
+                    <span class="radio-label">210 giorni/anno</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        function generateUrologiaDegenzaForm() {
+          return `
+            <div class="param-group">
+              <h3>Urologia Degenza</h3>
+
+              <div class="slider-container">
+                <label class="slider-label">Numero pazienti/giorno</label>
+                <div class="slider-wrapper">
+                  <input type="range" class="slider" id="pazienti-giorno"
+                         min="2" max="5" value="2" step="1">
+                  <div class="slider-value" id="pazienti-giorno-value">2</div>
+                </div>
+              </div>
+
+              <div class="slider-container">
+                <label class="slider-label">Litri per paziente prodotti al giorno</label>
+                <div class="slider-wrapper">
+                  <input type="range" class="slider" id="litri-paziente-deg"
+                         min="20" max="40" value="20" step="5">
+                  <div class="slider-value" id="litri-paziente-deg-value">20</div>
+                </div>
+              </div>
+
+              <div class="param-section">
+                <label class="section-label">Giornate di cistoclisi in un anno</label>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input type="radio" name="giorni-operativita-deg" value="120">
+                    <span class="radio-label">120 giorni/anno</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="giorni-operativita-deg" value="150">
+                    <span class="radio-label">150 giorni/anno</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="giorni-operativita-deg" value="180" checked>
+                    <span class="radio-label">180 giorni/anno</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="giorni-operativita-deg" value="210">
+                    <span class="radio-label">210 giorni/anno</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        function setupParametersEventListeners() {
+          document.querySelectorAll('.slider').forEach(slider => {
+            updateSliderProgress(slider);
+
+            slider.addEventListener('input', function() {
+              const valueDisplay = document.getElementById(this.id + '-value');
+              if (valueDisplay) {
+                valueDisplay.textContent = this.value;
+              }
+              updateSliderProgress(this);
+            });
+          });
+        }
+
+        function updateSliderProgress(slider) {
+          const min = parseFloat(slider.min) || 0;
+          const max = parseFloat(slider.max) || 100;
+          const val = parseFloat(slider.value) || 0;
+          const progress = ((val - min) / (max - min)) * 100;
+          slider.style.setProperty('--slider-progress', progress + '%');
+        }
+
+        function collectParameters() {
+          const params = {};
+
+          switch (appState.selectedDepartment) {
+            case 'urologia-operatoria':
+              params.litriGiorno = parseInt(document.getElementById('litri-giorno')?.value || 60);
+              params.giorniOperativita = parseInt(document.querySelector('input[name="giorni-operativita"]:checked')?.value || 180);
+              break;
+
+            case 'terapia-intensiva':
+              params.pazientiCRRT = parseInt(document.getElementById('pazienti-crrt')?.value || 3);
+              params.litriPaziente = parseInt(document.getElementById('litri-paziente')?.value || 60);
+              params.capacitaSacche = parseInt(document.querySelector('input[name="capacita-sacche"]:checked')?.value || 5);
+              params.giorniOperativita = parseInt(document.querySelector('input[name="giorni-operativita-ti"]:checked')?.value || 180);
+              break;
+
+            case 'urologia-degenza':
+              params.pazientiGiorno = parseInt(document.getElementById('pazienti-giorno')?.value || 3);
+              params.litriPaziente = parseInt(document.getElementById('litri-paziente-deg')?.value || 30);
+              params.giorniOperativita = parseInt(document.querySelector('input[name="giorni-operativita-deg"]:checked')?.value || 180);
+              break;
+          }
+
+          appState.parameters = params;
+        }
+
+        function calculateResults() {
+          collectParameters();
+
+          let results = {};
+
+          switch (appState.selectedDepartment) {
+            case 'urologia-operatoria':
+              results = calculateUrologiaOperatoria(appState.parameters);
+              break;
+            case 'terapia-intensiva':
+              results = calculateTerapiaIntensiva(appState.parameters);
+              break;
+            case 'urologia-degenza':
+              results = calculateUrologiaDegenza(appState.parameters);
+              break;
+          }
+
+          appState.results = results;
+        }
+
+        function calculateUrologiaOperatoria(params) {
+          const { litriGiorno, giorniOperativita } = params;
+
+          const canisterPerGiorno = litriGiorno / COSTANTI.CANISTER_CAPACITY;
+          const costoCanisterGiorno = canisterPerGiorno * COSTANTI.CANISTER_PRICE;
+          const costoSmaltimentoGiorno = litriGiorno * COSTANTI.SMALTIMENTO_PRICE;
+          const bioBoxGiorno = (canisterPerGiorno / COSTANTI.BIO_BOX_FREQUENCY);
+          const costoBioBoxGiorno = bioBoxGiorno * COSTANTI.BIO_BOX_PRICE;
+
+          const costoTradizioneGiorno = costoCanisterGiorno + costoSmaltimentoGiorno + costoBioBoxGiorno;
+          const costoTradizioneAnno = costoTradizioneGiorno * giorniOperativita;
+
+          const costoSprizGiorno = COSTANTI.SPRIZ_DAILY_COST;
+          const costoSprizAnno = costoSprizGiorno * giorniOperativita;
+
+          const risparmioGiorno = costoTradizioneGiorno - costoSprizGiorno;
+          const risparmioAnno = risparmioGiorno * giorniOperativita;
+          const risparmioPercentuale = (risparmioGiorno / costoTradizioneGiorno) * 100;
+
+          const co2TradizioneGiorno = litriGiorno * COSTANTI.CO2_STANDARD_PER_LITER;
+          const co2SprizGiorno = COSTANTI.CO2_SPRIZ_BASE + (litriGiorno * COSTANTI.CO2_SPRIZ_PER_LITER);
+          const co2RisparmioGiorno = co2TradizioneGiorno - co2SprizGiorno;
+          const co2RisparmioAnno = co2RisparmioGiorno * giorniOperativita;
+          const co2RisparmioPercentuale = (co2RisparmioGiorno / co2TradizioneGiorno) * 100;
+
+
+          return {
+            traditional: {
+              costoGiorno: costoTradizioneGiorno,
+              costoAnno: costoTradizioneAnno,
+              co2Giorno: co2TradizioneGiorno,
+              co2Anno: co2TradizioneGiorno * giorniOperativita
+            },
+            spriz: {
+              costoGiorno: costoSprizGiorno,
+              costoAnno: costoSprizAnno,
+              co2Giorno: co2SprizGiorno,
+              co2Anno: co2SprizGiorno * giorniOperativita
+            },
+            savings: {
+              economicDaily: risparmioGiorno,
+              economicAnnual: risparmioAnno,
+              economicPercentage: risparmioPercentuale,
+              co2Daily: co2RisparmioGiorno,
+              co2Annual: co2RisparmioAnno,
+              co2Percentage: co2RisparmioPercentuale
+            }
+          };
+        }
+
+        function calculateTerapiaIntensiva(params) {
+          const { pazientiCRRT, litriPaziente, capacitaSacche, giorniOperativita } = params;
+
+          const litriTotaliPerPaziente = litriPaziente;
+
+          const sacchePerPaziente = litriTotaliPerPaziente / capacitaSacche;
+          const costoSacchePerPaziente = sacchePerPaziente * COSTANTI.SACCHE_TI_PRICE;
+          const costoSmaltimentoPerPaziente = litriTotaliPerPaziente * COSTANTI.SMALTIMENTO_PRICE;
+          const bioBoxPerPaziente = litriTotaliPerPaziente / COSTANTI.BIO_BOX_FREQUENCY_OTHER;
+          const costoBioBoxPerPaziente = bioBoxPerPaziente * COSTANTI.BIO_BOX_PRICE;
+
+          const costoTradizioneGiorno = (costoSacchePerPaziente + costoSmaltimentoPerPaziente + costoBioBoxPerPaziente) * pazientiCRRT;
+          const costoTradizioneAnno = costoTradizioneGiorno * giorniOperativita;
+
+          const costoSprizGiorno = COSTANTI.SPRIZ_DAILY_COST;
+          const costoSprizAnno = costoSprizGiorno * giorniOperativita;
+
+          const risparmioGiorno = costoTradizioneGiorno - costoSprizGiorno;
+          const risparmioAnno = risparmioGiorno * giorniOperativita;
+          const risparmioPercentuale = (risparmioGiorno / costoTradizioneGiorno) * 100;
+
+          const litriTotaliCO2 = pazientiCRRT * litriPaziente;
+          const co2TradizioneGiorno = litriTotaliCO2 * COSTANTI.CO2_STANDARD_PER_LITER;
+          const co2SprizGiorno = COSTANTI.CO2_SPRIZ_BASE + (litriTotaliCO2 * COSTANTI.CO2_SPRIZ_PER_LITER);
+          const co2RisparmioGiorno = co2TradizioneGiorno - co2SprizGiorno;
+          const co2RisparmioAnno = co2RisparmioGiorno * giorniOperativita;
+          const co2RisparmioPercentuale = (co2RisparmioGiorno / co2TradizioneGiorno) * 100;
+
+          return {
+            traditional: {
+              costoGiorno: costoTradizioneGiorno,
+              costoAnno: costoTradizioneAnno,
+              co2Giorno: co2TradizioneGiorno,
+              co2Anno: co2TradizioneGiorno * giorniOperativita
+            },
+            spriz: {
+              costoGiorno: costoSprizGiorno,
+              costoAnno: costoSprizAnno,
+              co2Giorno: co2SprizGiorno,
+              co2Anno: co2SprizGiorno * giorniOperativita
+            },
+            savings: {
+              economicDaily: risparmioGiorno,
+              economicAnnual: risparmioAnno,
+              economicPercentage: risparmioPercentuale,
+              co2Daily: co2RisparmioGiorno,
+              co2Annual: co2RisparmioAnno,
+              co2Percentage: co2RisparmioPercentuale
+            }
+          };
+        }
+
+        function calculateUrologiaDegenza(params) {
+          const { pazientiGiorno, litriPaziente, giorniOperativita } = params;
+
+          const litriTotali = litriPaziente;
+
+          const sacche = litriTotali / COSTANTI.SACCHE_DEG_CAPACITY;
+          const costoSacche = sacche * COSTANTI.SACCHE_DEG_PRICE;
+          const costoSmaltimento = litriTotali * COSTANTI.SMALTIMENTO_PRICE;
+          const bioBox = litriTotali / COSTANTI.BIO_BOX_FREQUENCY_OTHER;
+          const costoBioBox = bioBox * COSTANTI.BIO_BOX_PRICE;
+
+          const costoTradizioneGiorno = (costoSacche + costoSmaltimento + costoBioBox) * pazientiGiorno;
+          const costoTradizioneAnno = costoTradizioneGiorno * giorniOperativita;
+
+          const costoSprizGiorno = COSTANTI.SPRIZ_DAILY_COST;
+          const costoSprizAnno = costoSprizGiorno * giorniOperativita;
+
+          const risparmioGiorno = costoTradizioneGiorno - costoSprizGiorno;
+          const risparmioAnno = risparmioGiorno * giorniOperativita;
+          const risparmioPercentuale = (risparmioGiorno / costoTradizioneGiorno) * 100;
+
+          const litriTotaliCO2 = pazientiGiorno * litriPaziente;
+          const co2TradizioneGiorno = litriTotaliCO2 * COSTANTI.CO2_STANDARD_PER_LITER;
+          const co2SprizGiorno = COSTANTI.CO2_SPRIZ_BASE + (litriTotaliCO2 * COSTANTI.CO2_SPRIZ_PER_LITER);
+          const co2RisparmioGiorno = co2TradizioneGiorno - co2SprizGiorno;
+          const co2RisparmioAnno = co2RisparmioGiorno * giorniOperativita;
+          const co2RisparmioPercentuale = (co2RisparmioGiorno / co2TradizioneGiorno) * 100;
+
+          return {
+            traditional: {
+              costoGiorno: costoTradizioneGiorno,
+              costoAnno: costoTradizioneAnno,
+              co2Giorno: co2TradizioneGiorno,
+              co2Anno: co2TradizioneGiorno * giorniOperativita
+            },
+            spriz: {
+              costoGiorno: costoSprizGiorno,
+              costoAnno: costoSprizAnno,
+              co2Giorno: co2SprizGiorno,
+              co2Anno: co2SprizGiorno * giorniOperativita
+            },
+            savings: {
+              economicDaily: risparmioGiorno,
+              economicAnnual: risparmioAnno,
+              economicPercentage: risparmioPercentuale,
+              co2Daily: co2RisparmioGiorno,
+              co2Annual: co2RisparmioAnno,
+              co2Percentage: co2RisparmioPercentuale
+            }
+          };
+        }
+
+        function showResults() {
+          const results = appState.results;
+
+          document.getElementById('savingsAmount').textContent = formatCurrency(results.savings.economicAnnual);
+          document.getElementById('co2Amount').textContent = `${formatEuropeanNumber(results.savings.co2Annual)} kg`;
+
+          updateProgressCircle('savingsProgress', 'savingsProgressText', results.savings.economicPercentage);
+          updateProgressCircle('co2Progress', 'co2ProgressText', results.savings.co2Percentage);
+
+          setupProgressCircleInteraction();
+
+          document.getElementById('traditionalCost').textContent = formatDailyCost(results.traditional.costoGiorno);
+          document.getElementById('traditionalCostAnnual').textContent = formatCurrency(results.traditional.costoAnno);
+          document.getElementById('traditionalCO2').textContent = `${formatEuropeanNumber(results.traditional.co2Anno)} kg`;
+          document.getElementById('sprizCost').textContent = formatDailyCost(results.spriz.costoGiorno);
+          document.getElementById('sprizCostAnnual').textContent = formatCurrency(results.spriz.costoAnno);
+          document.getElementById('sprizCO2').textContent = `${formatEuropeanNumber(results.spriz.co2Anno)} kg`;
+
+
+          generateDetailedBreakdown();
+        }
+
+        function generateDetailedBreakdown() {
+          const results = appState.results;
+          const params = appState.parameters;
+
+          let breakdownHTML = `
+            <div style="display: grid; gap: 1rem;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; font-weight: 600; background: #f8f9fa; padding: 0.8rem; border-radius: 8px;">
+                <div>Parametro</div>
+                <div>Metodo Tradizionale</div>
+                <div style="color: #4B5055; font-weight: 700;">S.P.R.I.Z.</div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; padding: 0.8rem;">
+                <div>Costo giornaliero</div>
+                <div>${formatCurrency(results.traditional.costoGiorno)}</div>
+                <div style="font-weight: 600;">${formatCurrency(results.spriz.costoGiorno)}</div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; padding: 0.8rem; background: #f8f9fa;">
+                <div>Costo annuale</div>
+                <div>${formatCurrency(results.traditional.costoAnno)}</div>
+                <div style="font-weight: 600;">${formatCurrency(results.spriz.costoAnno)}</div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; padding: 0.8rem;">
+                <div>CO₂ giornaliera</div>
+                <div>${results.traditional.co2Giorno.toFixed(2)} kg</div>
+                <div style="color: #4B5055; font-weight: 600;">${results.spriz.co2Giorno.toFixed(2)} kg</div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; padding: 0.8rem; background: #f8f9fa;">
+                <div>CO₂ annuale</div>
+                <div>${formatEuropeanNumber(results.traditional.co2Anno)} kg</div>
+                <div style="color: #4B5055; font-weight: 600;">${formatEuropeanNumber(results.spriz.co2Anno)} kg</div>
+              </div>
+            </div>
+          `;
+
+          document.getElementById('breakdownTable').innerHTML = breakdownHTML;
+        }
+
+        function handleFormSubmission(event) {
+          event.preventDefault();
+
+          clearFormErrors();
+
+          const formData = new FormData(event.target);
+
+          let isValid = true;
+          let errors = [];
+
+          if (!formData.get('nome')) {
+            showFieldError('nome', 'Il nome è obbligatorio');
+            errors.push('nome');
+            isValid = false;
+          }
+
+          const email = formData.get('email');
+          if (!email) {
+            showFieldError('email', 'L\'email è obbligatoria');
+            errors.push('email');
+            isValid = false;
+          } else if (!isValidEmail(email)) {
+            showFieldError('email', 'Inserisci un\'email valida');
+            errors.push('email');
+            isValid = false;
+          }
+
+          if (!formData.get('azienda')) {
+            showFieldError('azienda', 'Il campo Azienda/Ospedale è obbligatorio');
+            errors.push('azienda');
+            isValid = false;
+          }
+
+          if (!formData.get('privacy')) {
+            showFieldError('privacy', 'Devi accettare la Privacy Policy per continuare');
+            errors.push('privacy');
+            isValid = false;
+          }
+
+          if (!isValid) {
+            const firstErrorField = document.getElementById(errors[0]);
+            if (firstErrorField) {
+              firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              firstErrorField.focus();
+            }
+            return;
+          }
+
+          setTimeout(() => {
+            appState.formSubmitted = true;
+            unlockResults();
+          }, 1000);
+        }
+
+        function isValidEmail(email) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return emailRegex.test(email);
+        }
+
+        function setupContactForm7Integration() {
+          function tryPopulateForm(attempts = 0) {
+            const cf7Form = document.querySelector('.wpcf7-form');
+
+            if (cf7Form) {
+              console.log('Contact Form 7 trovato, popolamento campi...');
+              populateHiddenFields(cf7Form);
+
+              const observer = new MutationObserver(() => {
+                populateHiddenFields(cf7Form);
+              });
+              observer.observe(cf7Form, { childList: true, subtree: true });
+
+            } else if (attempts < 10) {
+              setTimeout(() => tryPopulateForm(attempts + 1), 500);
+            }
+          }
+
+          tryPopulateForm();
+
+          document.addEventListener('wpcf7mailsent', function(event) {
+            console.log('Form CF7 inviato con successo');
+            appState.formSubmitted = true;
+            unlockResults();
+          }, false);
+        }
+
+        function populateHiddenFields(form) {
+          console.log('Popolamento campi nascosti...');
+          console.log('Stato app:', appState);
+
+          const results = calculateResults();
+          console.log('Risultati:', results);
+
+          const repartoNames = {
+            'urologia-operatoria': 'Sala Operatoria Urologia',
+            'terapia-intensiva': 'Terapia Intensiva',
+            'urologia-degenza': 'Urologia Degenza'
+          };
+
+          const repartoField = form.querySelector('input[name="calc-reparto"]');
+          if (repartoField) {
+            repartoField.value = repartoNames[appState.selectedDepartment] || appState.selectedDepartment || 'Non specificato';
+            console.log('Reparto impostato:', repartoField.value);
+          }
+
+          const parametriField = form.querySelector('input[name="calc-parametri"]');
+          if (parametriField && appState.parameters) {
+            let parametriText = '';
+            Object.keys(appState.parameters).forEach(key => {
+              parametriText += `${key}: ${appState.parameters[key]}, `;
+            });
+            parametriField.value = parametriText.slice(0, -2);
+            console.log('Parametri impostati:', parametriField.value);
+          }
+
+          const risparmiouField = form.querySelector('input[name="calc-risparmio"]');
+          if (risparmiouField && results?.savings) {
+            risparmiouField.value = formatCurrency(results.savings.economicAnnual);
+            console.log('Risparmio impostato:', risparmiouField.value);
+          }
+
+          const co2Field = form.querySelector('input[name="calc-co2"]');
+          if (co2Field && results?.savings) {
+            co2Field.value = formatEuropeanNumber(results.savings.co2Annual) + ' kg';
+            console.log('CO2 impostato:', co2Field.value);
+          }
+        }
+
+        function showFieldError(fieldId, message) {
+          const field = document.getElementById(fieldId);
+          const formGroup = field.closest('.form-group, .checkbox-group');
+
+          formGroup.classList.add('error');
+          field.classList.add('error');
+
+          const errorDiv = document.createElement('div');
+          errorDiv.className = 'error-message';
+          errorDiv.textContent = message;
+
+          if (fieldId === 'privacy') {
+            formGroup.appendChild(errorDiv);
+          } else {
+            formGroup.appendChild(errorDiv);
+          }
+        }
+
+        function clearFormErrors() {
+          document.querySelectorAll('.error-message').forEach(msg => msg.remove());
+          document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+        }
+
+        function unlockResults() {
+          document.getElementById('leadWall').classList.remove('active');
+          document.getElementById('resultsContent').classList.remove('blurred');
+          generateDetailedBreakdown();
+        }
+
+
+        function updateProgressCircle(circleId, textId, percentage) {
+          const circle = document.getElementById(circleId);
+          const text = document.getElementById(textId);
+
+          if (!circle || !text) return;
+
+          const radius = circle.r.baseVal.value;
+          const circumference = radius * 2 * Math.PI;
+          const offset = circumference - (percentage / 100) * circumference;
+
+          circle.style.strokeDasharray = `${circumference} ${circumference}`;
+
+          setTimeout(() => {
+            circle.style.strokeDashoffset = offset;
+
+            let currentValue = 0;
+            const increment = percentage / 50;
+            const timer = setInterval(() => {
+              currentValue += increment;
+              if (currentValue >= percentage) {
+                currentValue = percentage;
+                clearInterval(timer);
+              }
+              const isAnyProgressCo2 = text.closest('.progress-circle').classList.contains('co2');
+              const isAnyProgressSavings = text.closest('.progress-circle').classList.contains('savings');
+              const sign = (isAnyProgressCo2 || isAnyProgressSavings) ? '-' : '';
+              text.textContent = `${sign}${Math.round(currentValue)}%`;
+            }, 20);
+          }, 500);
+        }
+
+        function setupProgressCircleInteraction() {
+          document.querySelectorAll('.progress-circle').forEach(circle => {
+            circle.addEventListener('click', function() {
+              this.style.transform = 'scale(0.95)';
+              setTimeout(() => {
+                this.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                  this.style.transform = 'scale(1)';
+                }, 150);
+              }, 100);
+            });
+
+            circle.addEventListener('mouseenter', function() {
+              this.style.transform = 'scale(1.1)';
+            });
+
+            circle.addEventListener('mouseleave', function() {
+              this.style.transform = 'scale(1)';
+            });
+          });
+        }
+    </script>
+</body>
+</html>
