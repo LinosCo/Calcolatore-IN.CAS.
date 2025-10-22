@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.P.R.I.Z. Calculator Preview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* IN.CAS. Brand Colors & Typography */
+        :root {
+          --incas-yellow: #FDC32D;
+          --incas-gray: #4B5055;
+          --incas-white: #FFFFFF;
+          --incas-black: #000000;
+          --light-gray: #f8f9fa;
+          --border-radius: 12px;
+          --border-radius-small: 8px;
+          --shadow-light: 0 2px 10px rgba(0,0,0,0.1);
+          --shadow-medium: 0 4px 20px rgba(0,0,0,0.15);
+          --shadow-strong: 0 8px 30px rgba(0,0,0,0.2);
+        }
+
+        .calculator-preview-container {
+          max-width: 600px;
+          font-family: 'Raleway', 'Lato', sans-serif;
+          font-weight: 300;
+          line-height: 1.6;
+          color: var(--incas-gray);
+        }
+
+        .calculator-preview-container * {
+          box-sizing: border-box;
+        }
+
+        .preview-header {
+          text-align: center;
+          margin-bottom: 2rem;
+        }
+
+        .preview-header h3 {
+          font-family: 'Raleway', sans-serif;
+          font-weight: 600;
+          font-size: 1.5rem;
+          color: var(--incas-gray);
+          margin-bottom: 0.5rem;
+          font-style: italic;
+        }
+
+        .preview-header p {
+          font-size: 0.95rem;
+          color: var(--incas-gray);
+          opacity: 0.8;
+        }
+
+        /* SAVINGS STRIP */
+        .savings-strip {
+          display: grid;
+          grid-template-columns: 1fr 140px;
+          gap: 1.5rem;
+          align-items: center;
+          background: linear-gradient(135deg, #FDC32D 0%, #f0b429 100%);
+          padding: 1.5rem 2rem;
+          border-radius: var(--border-radius);
+          margin-bottom: 1.5rem;
+          box-shadow: var(--shadow-medium);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          cursor: pointer;
+        }
+
+        .savings-strip:hover {
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-strong);
+        }
+
+        .savings-info-box {
+          text-align: left;
+        }
+
+        .savings-info-title {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: var(--incas-gray);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-bottom: 0.2rem;
+        }
+
+        .savings-info-subtitle {
+          font-size: 0.85rem;
+          font-weight: 500;
+          color: var(--incas-gray);
+          margin-bottom: 0.8rem;
+        }
+
+        .savings-info-amount {
+          font-size: 2rem;
+          font-weight: 800;
+          color: var(--incas-gray);
+          line-height: 1;
+          margin-bottom: 0.2rem;
+        }
+
+        .savings-info-period {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: var(--incas-gray);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .savings-chart {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* CO2 STRIP */
+        .co2-strip {
+          display: grid;
+          grid-template-columns: 1fr 140px;
+          gap: 1.5rem;
+          align-items: center;
+          background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+          padding: 1.5rem 2rem;
+          border-radius: var(--border-radius);
+          margin-bottom: 1.5rem;
+          box-shadow: var(--shadow-medium);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          cursor: pointer;
+        }
+
+        .co2-strip:hover {
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-strong);
+        }
+
+        .co2-info-box {
+          text-align: left;
+        }
+
+        .co2-info-title {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: #ffffff;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-bottom: 0.2rem;
+        }
+
+        .co2-info-subtitle {
+          font-size: 0.85rem;
+          font-weight: 500;
+          color: #ffffff;
+          margin-bottom: 0.8rem;
+        }
+
+        .co2-info-amount {
+          font-size: 2rem;
+          font-weight: 800;
+          color: #ffffff;
+          line-height: 1;
+          margin-bottom: 0.2rem;
+        }
+
+        .co2-info-period {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: #ffffff;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .co2-chart {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* PROGRESS CIRCLE */
+        .progress-circle {
+          width: 100px;
+          height: 100px;
+          position: relative;
+          transition: transform 0.3s ease;
+          flex-shrink: 0;
+        }
+
+        .progress-circle:hover {
+          transform: scale(1.08);
+        }
+
+        .progress-circle svg {
+          width: 100%;
+          height: 100%;
+          transform: rotate(-90deg);
+        }
+
+        .progress-circle .background {
+          fill: none;
+          stroke: rgba(255, 255, 255, 0.3);
+          stroke-width: 4;
+        }
+
+        .progress-circle.savings .background {
+          stroke: rgba(75, 80, 85, 0.2);
+        }
+
+        .progress-circle .progress {
+          fill: none;
+          stroke-width: 4;
+          stroke-linecap: round;
+          transition: stroke-dasharray 1s ease;
+        }
+
+        .progress-circle.savings .progress {
+          stroke: var(--incas-gray);
+        }
+
+        .progress-circle.co2 .progress {
+          stroke: #ffffff;
+        }
+
+        .progress-circle .percentage-text {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: var(--incas-gray);
+        }
+
+        .progress-circle.co2 .percentage-text {
+          color: #ffffff;
+        }
+
+        .preview-note {
+          text-align: center;
+          font-size: 0.85rem;
+          color: var(--incas-gray);
+          opacity: 0.7;
+          margin-top: 1rem;
+          font-style: italic;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+          .savings-strip,
+          .co2-strip {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            text-align: center;
+          }
+
+          .savings-info-box,
+          .co2-info-box {
+            text-align: center;
+          }
+
+          .savings-info-amount,
+          .co2-info-amount {
+            font-size: 1.6rem;
+          }
+
+          .savings-info-period,
+          .co2-info-period {
+            font-size: 1rem;
+          }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-preview-container">
+        <div class="preview-header">
+            <h3>* CALCULATION based on average urology operating room usage</h3>
+        </div>
+
+        <!-- SAVINGS STRIP -->
+        <div class="savings-strip">
+            <div class="savings-info-box">
+                <div class="savings-info-title">ECONOMIC SAVINGS</div>
+                <div class="savings-info-subtitle">WITH S.P.R.I.Z. ASPIRATOR</div>
+                <div class="savings-info-amount" id="savingsAmount">€ 0</div>
+                <div class="savings-info-period">PER YEAR</div>
+            </div>
+            <div class="savings-chart">
+                <div class="progress-circle savings">
+                    <svg viewBox="0 0 36 36">
+                        <circle class="background" cx="18" cy="18" r="16"></circle>
+                        <circle class="progress" cx="18" cy="18" r="16" stroke-dasharray="0, 100" id="savingsProgress"></circle>
+                    </svg>
+                    <div class="percentage-text" id="savingsProgressText">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CO2 STRIP -->
+        <div class="co2-strip">
+            <div class="co2-info-box">
+                <div class="co2-info-title">CO₂ REDUCTION</div>
+                <div class="co2-info-subtitle">WITH S.P.R.I.Z. ASPIRATOR</div>
+                <div class="co2-info-amount" id="co2Amount">0 kg</div>
+                <div class="co2-info-period">PER YEAR</div>
+            </div>
+            <div class="co2-chart">
+                <div class="progress-circle co2">
+                    <svg viewBox="0 0 36 36">
+                        <circle class="background" cx="18" cy="18" r="16"></circle>
+                        <circle class="progress" cx="18" cy="18" r="16" stroke-dasharray="0, 100" id="co2Progress"></circle>
+                    </svg>
+                    <div class="percentage-text" id="co2ProgressText">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Formatting functions
+        function formatEuropeanNumber(number) {
+          return new Intl.NumberFormat('en-EN', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+          }).format(Math.round(number));
+        }
+
+        function formatCurrency(number) {
+          const formattedNumber = formatEuropeanNumber(Math.round(number));
+          return `€ ${formattedNumber}`;
+        }
+
+        // Sample calculation (Urology Operating Room - medium values)
+        const COSTANTI = {
+          CANISTER_PRICE: 1.56,
+          SMALTIMENTO_PRICE: 1.43,
+          BIO_BOX_PRICE: 6.00,
+          SPRIZ_DAILY_COST: 40.00,
+          CO2_STANDARD_PER_LITER: 0.082,
+          CO2_SPRIZ_BASE: 1.03,
+          CO2_SPRIZ_PER_LITER: 0.0048,
+          CANISTER_CAPACITY: 3,
+          BIO_BOX_FREQUENCY: 3,
+        };
+
+        // Sample parameters (medium scenario)
+        const sampleParams = {
+          litriGiorno: 60,
+          giorniOperativita: 180
+        };
+
+        function calculateSampleResults() {
+          const { litriGiorno, giorniOperativita } = sampleParams;
+
+          // Traditional method calculation
+          const canisterPerGiorno = litriGiorno / COSTANTI.CANISTER_CAPACITY;
+          const costoCanisterGiorno = canisterPerGiorno * COSTANTI.CANISTER_PRICE;
+          const costoSmaltimentoGiorno = litriGiorno * COSTANTI.SMALTIMENTO_PRICE;
+          const bioBoxGiorno = (canisterPerGiorno / COSTANTI.BIO_BOX_FREQUENCY);
+          const costoBioBoxGiorno = bioBoxGiorno * COSTANTI.BIO_BOX_PRICE;
+
+          const costoTradizioneGiorno = costoCanisterGiorno + costoSmaltimentoGiorno + costoBioBoxGiorno;
+          const costoTradizioneAnno = costoTradizioneGiorno * giorniOperativita;
+
+          // SPRIZ calculation
+          const costoSprizGiorno = COSTANTI.SPRIZ_DAILY_COST;
+          const costoSprizAnno = costoSprizGiorno * giorniOperativita;
+
+          // Savings
+          const risparmioGiorno = costoTradizioneGiorno - costoSprizGiorno;
+          const risparmioAnno = risparmioGiorno * giorniOperativita;
+          const risparmioPercentuale = (risparmioGiorno / costoTradizioneGiorno) * 100;
+
+          // CO2 calculation
+          const co2TradizioneGiorno = litriGiorno * COSTANTI.CO2_STANDARD_PER_LITER;
+          const co2SprizGiorno = COSTANTI.CO2_SPRIZ_BASE + (litriGiorno * COSTANTI.CO2_SPRIZ_PER_LITER);
+          const co2RisparmioGiorno = co2TradizioneGiorno - co2SprizGiorno;
+          const co2RisparmioAnno = co2RisparmioGiorno * giorniOperativita;
+          const co2RisparmioPercentuale = (co2RisparmioGiorno / co2TradizioneGiorno) * 100;
+
+          return {
+            savings: {
+              economicAnnual: risparmioAnno,
+              economicPercentage: risparmioPercentuale,
+              co2Annual: co2RisparmioAnno,
+              co2Percentage: co2RisparmioPercentuale
+            }
+          };
+        }
+
+        function updateProgressCircle(circleId, textId, percentage) {
+          const circle = document.getElementById(circleId);
+          const text = document.getElementById(textId);
+
+          if (!circle || !text) return;
+
+          const radius = circle.r.baseVal.value;
+          const circumference = radius * 2 * Math.PI;
+          const offset = circumference - (percentage / 100) * circumference;
+
+          circle.style.strokeDasharray = `${circumference} ${circumference}`;
+
+          setTimeout(() => {
+            circle.style.strokeDashoffset = offset;
+
+            // Animate percentage text
+            let currentValue = 0;
+            const increment = percentage / 50;
+            const timer = setInterval(() => {
+              currentValue += increment;
+              if (currentValue >= percentage) {
+                currentValue = percentage;
+                clearInterval(timer);
+              }
+              const isCo2 = text.closest('.progress-circle').classList.contains('co2');
+              const isSavings = text.closest('.progress-circle').classList.contains('savings');
+              const sign = (isCo2 || isSavings) ? '-' : '';
+              text.textContent = `${sign}${Math.round(currentValue)}%`;
+            }, 20);
+          }, 300);
+        }
+
+        function animateNumber(elementId, targetValue, isCurrency = false) {
+          const element = document.getElementById(elementId);
+          if (!element) return;
+
+          let currentValue = 0;
+          const increment = targetValue / 60;
+          const timer = setInterval(() => {
+            currentValue += increment;
+            if (currentValue >= targetValue) {
+              currentValue = targetValue;
+              clearInterval(timer);
+            }
+            if (isCurrency) {
+              element.textContent = formatCurrency(currentValue);
+            } else {
+              element.textContent = `${formatEuropeanNumber(currentValue)} kg`;
+            }
+          }, 20);
+        }
+
+        // Initialize preview on load
+        document.addEventListener('DOMContentLoaded', function() {
+          const results = calculateSampleResults();
+
+          // Animate numbers
+          setTimeout(() => {
+            animateNumber('savingsAmount', results.savings.economicAnnual, true);
+            animateNumber('co2Amount', results.savings.co2Annual, false);
+
+            // Animate progress circles
+            updateProgressCircle('savingsProgress', 'savingsProgressText', results.savings.economicPercentage);
+            updateProgressCircle('co2Progress', 'co2ProgressText', results.savings.co2Percentage);
+          }, 200);
+        });
+    </script>
+</body>
+</html>
